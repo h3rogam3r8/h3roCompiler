@@ -71,7 +71,7 @@ if it has a decimal point or exponent.
 `+` `-` `*` `/` `=` `;` `,` `:` `->` `(` `)` `{` `}` `[` `]` `<` `>`
 
 `<` and `>` are also the brackets in `tensor<...>`. That would be ambiguous in a
-language with comparison operators, which is one reason v0.1 has none.
+language with comparison operators, which is one reason there are no comparison operators yet.
 
 ## 3. Types
 
@@ -85,8 +85,8 @@ language with comparison operators, which is one reason v0.1 has none.
 tensor<[d0, d1, ...], dtype>
 ```
 
-The number of dimensions is the tensor's **rank**. v0.1 allows rank 1 through
-4. Each dimension is either an integer literal (at least 1) or a symbolic
+The number of dimensions is the tensor's **rank**. For now, rank 1 through 4.
+Each dimension is either an integer literal (at least 1) or a symbolic
 dimension.
 
 ```hero
@@ -184,11 +184,11 @@ Both operands must have the same dtype.
 ## 7. Built-in operations
 
 `axis` arguments must be integer literals, since the compiler needs them at
-compile time. Negative axes are not allowed in v0.1.
+compile time. Negative axes aren't allowed yet.
 
 | Operation | Shape rule | Notes |
 |---|---|---|
-| `matmul(a, b)` | `[M, K]` and `[K, N]` produce `[M, N]` | rank 2 only in v0.1 |
+| `matmul(a, b)` | `[M, K]` and `[K, N]` produce `[M, N]` | rank 2 only for now |
 | `transpose(x)` | `[M, N]` produces `[N, M]` | rank 2 only |
 | `sum(x, axis)` | `axis` becomes size 1 | rank is unchanged |
 | `max(x, axis)` | `axis` becomes size 1 | rank is unchanged |
