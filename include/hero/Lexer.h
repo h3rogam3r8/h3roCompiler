@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <cstddef>
 
 namespace hero {
 
@@ -88,6 +89,21 @@ public:
   std::vector<Token> tokenize();
 
 private:
+  bool atEnd() const;
+  char peek(size_t ahead = 0) const;
+
+  // Consume one character, keeping line and column up to date.
+  char advance();
+
+  // Consume the next character only if it's the one expected.
+  bool match(char expected);
+
+  void skipWhitespaceAndComments();
+
+  Token makeToken(TokenKind kind, SourceLoc start, size_t startPos) const;
+  Token lexWord(SourceLoc start, size_t startPos);
+  Token lexNumber(SourceLoc start, size_t startPos);
+
   std::string_view source_;
   size_t pos_ = 0;
   SourceLoc loc_;
