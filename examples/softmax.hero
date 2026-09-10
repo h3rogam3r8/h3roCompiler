@@ -1,0 +1,6 @@
+// Softmax over each row.
+fn softmax(x: tensor<[M, N], f32>) -> tensor<[M, N], f32> {
+    let m = max(x, 1);        // [M, 1] - axis 1 reduced but kept
+    let e = exp(x - m);       // [M, N] - [M, 1] broadcasts
+    e / sum(e, 1)
+}
