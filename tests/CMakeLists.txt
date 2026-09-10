@@ -1,6 +1,7 @@
 include(FetchContent)
 
-# Downloads and builds googletest as part of configuring.
+# Downloads and builds googletest as part of configuring, so there's
+# nothing to install by hand and the version is pinned right here.
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
@@ -9,9 +10,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(hero_tests
-  SanityTest.cpp
+  LexerTest.cpp
 )
 
-target_link_libraries(hero_tests PRIVATE GTest::gtest_main)
+target_link_libraries(hero_tests PRIVATE hero_frontend GTest::gtest_main)
+
+# Registers every TEST() in the binary with ctest individually.
 include(GoogleTest)
 gtest_discover_tests(hero_tests)

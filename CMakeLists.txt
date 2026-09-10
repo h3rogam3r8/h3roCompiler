@@ -13,6 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(HERO_BUILD_TESTS "Build the unit tests" ON)
 
+add_subdirectory(src)
 add_subdirectory(tools/heroc)
 
 if(HERO_BUILD_TESTS)
