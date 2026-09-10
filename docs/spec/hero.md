@@ -105,13 +105,13 @@ be the same value at runtime.
 fn add(a: tensor<[B, N], f32>, b: tensor<[B, N], f32>) -> tensor<[B, N], f32>
 ```
 
-Both arguments must agree on both dimensions. The compiler proves what it can
-and emits a runtime check for the rest.
+Both arguments must agree on both dimensions. I think the compiler proves what
+it can at compile time and checks the rest at runtime, but I don't know yet how
+that check actually gets generated.
 
 The compiler will never assume two *different* symbols are equal. `B` and `N`
 might happen to both be 512, but nothing in the program says so, so a rule that
-needs them equal is a compile error. This is the correct behavior even though
-it will occasionally annoy you.
+needs them equal is a compile error. I think this is the right call.
 
 ### Dtype conversion
 
@@ -267,5 +267,5 @@ literal      ::= int_lit | float_lit | "true" | "false"
 
 The nesting of `add_expr` inside `mul_expr` inside `unary_expr` is how the
 precedence table in section 5 gets encoded structurally: `+` can contain a `*`,
-but not the other way around. The parser will end up with roughly one function
-per rule here.
+but not the other way around. I think the parser ends up with about one
+function per rule here. We'll see if it's that clean.
