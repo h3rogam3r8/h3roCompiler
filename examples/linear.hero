@@ -1,0 +1,7 @@
+// The smallest useful program: one matrix multiply plus a bias.
+fn linear(x: tensor<[B, 128], f32>,
+          w: tensor<[128, 64], f32>,
+          b: tensor<[64],      f32>) -> tensor<[B, 64], f32>
+{
+    matmul(x, w) + b
+}

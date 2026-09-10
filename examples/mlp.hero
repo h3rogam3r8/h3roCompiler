@@ -1,0 +1,11 @@
+// One transformer-style feed-forward block, the same one in the README.
+// This is the first program the compiler should handle end to end.
+fn mlp(x:  tensor<[B, 768],    f16>,
+       w1: tensor<[768, 3072], f16>, b1: tensor<[3072], f16>,
+       w2: tensor<[3072, 768], f16>, b2: tensor<[768],  f16>)
+    -> tensor<[B, 768], f16>
+{
+    let h = matmul(x, w1) + b1;
+    let a = gelu(h);
+    matmul(a, w2) + b2
+}
