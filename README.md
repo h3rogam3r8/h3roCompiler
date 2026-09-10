@@ -68,7 +68,8 @@ Rough order. Each phase will end with something I can actually run. It will be v
 5. **Graph optimization** — fusion, layout assignment, a dataflow framework I
    write myself instead of importing.
 6. **Down to loops** — linalg, tiling, bufferization, and memory planning by
-   graph coloring, which is register allocation wearing a costume.
+   graph coloring. Apparently this ends up being the same problem as register
+   allocation, which I did not expect.
 7. **CPU backend** — vectorize, JIT through LLVM, benchmark against OpenBLAS.
 8. **Autotuning** — search over tile sizes and schedules, cache what wins.
 9. **GPU backend** — PTX, shared memory tiling, tensor cores, benchmark against
@@ -86,8 +87,11 @@ No general-purpose language features. Single device only.
 ## Machines
 
 I develop on an M2 Pro Mac (ARM NEON, no CUDA) and do GPU work on an RTX 2060
-laptop through WSL2. The 2060 is Turing, so `mma.sync` tensor cores work but
-`cp.async` doesn't — that one needs sm_80. GPU code is tested by running
+laptop through WSL2. The 2060 is Turing. From what I can tell that means
+`mma.sync` tensor cores work on it but `cp.async` doesn't, since that one
+needs sm_80. The plan is to test GPU code by checking the generated PTX as text, 
+which shouldn't need a GPU at all. The 2060 is Turing, so `mma.sync` tensor cores work but
+`cp.async` doesn't: that one needs sm_80. GPU code is tested by running
 FileCheck over the generated PTX, which doesn't need a GPU at all.
 
 ## License
