@@ -18,3 +18,10 @@ target_link_libraries(hero_tests PRIVATE hero_frontend GTest::gtest_main)
 # Registers every TEST() in the binary with ctest individually.
 include(GoogleTest)
 gtest_discover_tests(hero_tests)
+
+# Prefer GTest's syntax/look over CMake. 
+add_custom_target(check
+  COMMAND hero_tests --gtest_color=yes
+  DEPENDS hero_tests
+  USES_TERMINAL
+)
