@@ -1,0 +1,46 @@
+# Copied from other compiler project I've done
+
+# Build trees
+build/
+build-*/
+cmake-build-*/
+install/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+Testing/
+
+# Object and binary output
+*.o
+*.a
+*.so
+*.dylib
+*.dSYM/
+
+# Generated IR and device code, except files checked in as test inputs
+*.ll
+*.bc
+*.ptx
+*.cubin
+!test/**/*.ll
+!test/**/*.ptx
+
+# lit output
+Output/
+.lit_test_times.txt
+
+# Autotuning cache is machine-specific
+forge/cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
