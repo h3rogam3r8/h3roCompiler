@@ -22,9 +22,27 @@ public:
   const std::vector<std::string> &errors() const { return errors_; }
 
 private:
-  // Lexing the whole file up front instead of pulling one token at a
-  // time. Wastes memory on big files but lookahead becomes an index and
-  // Hero files are tiny.
+  // Token helpers.
+  const Token &peek(size_t ahead = 0) const;
+  const Token &advance();
+  bool check(TokenKind kind) const;
+  bool match(TokenKind kind);
+  bool expect(TokenKind kind, const char *what);
+  void error(const Token &tok, const std::string &message);
+
+  // One function per grammar rule, same names as the spec uses.
+  bool parseFunction(Function &out);
+  bool parseParam(Param &out);
+  bool parseType(Type &out);
+  bool parseBlock(Block &out);
+
+  ExprPtr parseExpr();
+  ExprPtr parseAdd();
+  ExprPtr parseMul();
+  ExprPtr parseUnary();
+  ExprPtr parsePrimary();
+
+  // Lexing the whole file up front instead of pulling one token at a time.
   std::vector<Token> tokens_;
   size_t index_ = 0;
   std::vector<std::string> errors_;
