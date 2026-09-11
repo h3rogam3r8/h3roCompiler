@@ -1,8 +1,8 @@
 add_library(hero_frontend
   Lexer.cpp
+  Parser.cpp
 )
 
-# PUBLIC avoids redundancy for header inclusions. PRIVATE makes it my problem.
 target_include_directories(hero_frontend
   PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
