@@ -3,6 +3,7 @@ add_library(hero_frontend
   Parser.cpp
   ASTPrinter.cpp
   SourceFile.cpp
+  Diagnostics.cpp
 )
 
 target_include_directories(hero_frontend
