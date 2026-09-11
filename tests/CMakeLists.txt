@@ -9,8 +9,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+# Testing Block for modifications.
 add_executable(hero_tests
   LexerTest.cpp
+  ParserTest.cpp
 )
 
 target_link_libraries(hero_tests PRIVATE hero_frontend GTest::gtest_main)
