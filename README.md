@@ -1,10 +1,10 @@
 # H3ro Compiler
 
+![CI](https://github.com/h3rogam3r8/h3roCompiler/actions/workflows/ci.yml/badge.svg)
+
 Hero is a small tensor language and the compiler that turns it into fast code.
 It's built on MLIR and LLVM, and it targets three things: a CPU, an NVIDIA GPU,
-and a made-up accelerator called Anvil that I also have to write a simulator for.
-
-**Status:** Nothing works yet. Will update as I make improvements.
+and a made-up accelerator called Anvil (get it?) that I also have to write a simulator for.
 
 ## Why
 

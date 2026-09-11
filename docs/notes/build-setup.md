@@ -44,3 +44,13 @@ googletest is enough for a lexer.
 
 The include/src split is what LLVM does. It's obviously overkill for two
 files right now but I'd rather set it up than move everything later.
+
+## CI
+
+Two runners, ubuntu and macos, since those are the two compilers I care
+about. Uses ctest instead of running the test binary directly.
+
+Also runs heroc over examples/ at the end. Not really a test, but it
+would catch the binary failing to link.
+
+Things I didn't do yet and should: caching and Werror.

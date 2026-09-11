@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    # Both machines I actually use. Linux runs gcc, macOS runs clang, so
+    # this catches the stuff that only one of them complains about.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Install Ninja (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build
+
+      # ctest instead of running the binary here. This is the reason I
+      # kept it around back when I added the check target.
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Run heroc on the examples
+        run: |
+          for f in examples/*.hero; do
+            echo "--- $f"
+            ./build/tools/heroc/heroc "$f" > /dev/null
+          done
