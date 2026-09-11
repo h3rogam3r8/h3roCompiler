@@ -2,6 +2,7 @@ add_library(hero_frontend
   Lexer.cpp
   Parser.cpp
   ASTPrinter.cpp
+  SourceFile.cpp
 )
 
 target_include_directories(hero_frontend
