@@ -1,6 +1,7 @@
 // Most of the Parser is imported from Alpha, at least in an ideological sense.
 
 #include "hero/Parser.h"
+#include <stdexcept>
 
 #include <memory>
 #include <string>
@@ -153,8 +154,23 @@ bool Parser::parseType(Type &out) {
   for (;;) {
     Dim dim;
     if (check(TokenKind::IntLiteral)) {
+      const Token &tok = advance();
+
+      long long value = 0;
+      try {
+        value = std::stoll(tok.text);
+      } catch (const std::out_of_range &) {
+        // Only out_of_range can happen here, the lexer already made sure
+        error(tok, "dimension is too big");
+        return false;
+      }
+      if (value < 1) {
+        error(tok, "dimension has to be at least 1");
+        return false;
+      }
+
       dim.isSymbol = false;
-      dim.size = std::stoll(advance().text);
+      dim.size = value;
     } else if (check(TokenKind::Identifier)) {
       dim.isSymbol = true;
       dim.symbol = advance().text;
