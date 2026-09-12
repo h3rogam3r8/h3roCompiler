@@ -2,6 +2,7 @@
 #define HERO_LEXER_H
 
 #include "hero/SourceFile.h"
+#include <iosfwd>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -68,6 +69,10 @@ struct Token {
 
 // Name of a token kind, for error messages and test output.
 const char *tokenKindName(TokenKind kind);
+
+// Dumps a token stream, one per line, for heroc --emit=tokens. Handy when
+// the parser is unhappy and I want to see what it was actually handed.
+void printTokens(const std::vector<Token> &tokens, std::ostream &os);
 
 class Lexer {
 public:

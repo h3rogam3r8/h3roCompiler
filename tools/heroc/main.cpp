@@ -5,6 +5,8 @@
 #include "hero/Parser.h"
 #include "hero/SourceFile.h"
 
+#include "hero/Lexer.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -13,7 +15,7 @@
 namespace {
 
 void usage() {
-  std::cerr << "usage: heroc <file.hero> [--emit=ast]\n";
+  std::cerr << "usage: heroc <file.hero> [--emit=ast|tokens]\n";
 }
 
 }  // namespace
@@ -44,8 +46,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if (emit != "ast") {
-    std::cerr << "heroc: only --emit=ast works so far\n";
+  if (emit != "ast" && emit != "tokens") {
+    std::cerr << "heroc: --emit has to be ast or tokens\n";
     return 1;
   }
 
@@ -60,6 +62,13 @@ int main(int argc, char **argv) {
   std::string source = buffer.str();
 
   hero::SourceFile file(path, source);
+
+  // Stops before the parser. Useful when the parser is complaining about parser..
+  if (emit == "tokens") {
+    hero::printTokens(hero::Lexer(file.text()).tokenize(), std::cout);
+    return 0;
+  }
+
   hero::Parser parser(file);
 
   auto program = parser.parse();

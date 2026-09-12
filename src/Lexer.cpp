@@ -1,6 +1,8 @@
 #include "hero/Lexer.h"
 
 #include <cctype>
+#include <iomanip>
+#include <ostream>
 #include <unordered_map>
 #include <utility>
 
@@ -255,6 +257,22 @@ std::vector<Token> Lexer::tokenize() {
     tokens.push_back(std::move(token));
     if (done)
       return tokens;
+  }
+}
+
+void printTokens(const std::vector<Token> &tokens, std::ostream &os) {
+  for (const Token &tok : tokens) {
+    std::string where =
+        std::to_string(tok.loc.line) + ":" + std::to_string(tok.loc.column);
+
+    os << std::left << std::setw(8) << where << std::setw(15)
+       << tokenKindName(tok.kind);
+
+    // Eof has no text and printing '' for it just looks broken.
+    if (tok.kind != TokenKind::Eof)
+      os << "'" << tok.text << "'";
+
+    os << "\n";
   }
 }
 

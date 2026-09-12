@@ -18,8 +18,8 @@ add_executable(hero_tests
   DiagnosticsTest.cpp
   LexerErrorTest.cpp
   ParserErrorTest.cpp
+  TokenPrinterTest.cpp
 )
-
 target_link_libraries(hero_tests PRIVATE hero_frontend hero_warnings GTest::gtest_main)
 
 # Registers every TEST() in the binary with ctest individually.
