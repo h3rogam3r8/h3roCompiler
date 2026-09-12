@@ -10,4 +10,6 @@ target_include_directories(hero_frontend
   PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
-target_compile_options(hero_frontend PRIVATE -Wall -Wextra)
+# New change for linking libraries
+
+target_link_libraries(hero_frontend PRIVATE hero_warnings)
