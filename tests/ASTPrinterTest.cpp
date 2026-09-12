@@ -9,7 +9,8 @@ using namespace hero;
 namespace {
 
 std::string printSource(const std::string &source) {
-  Parser parser(source);
+  SourceFile file("test.hero", source);
+  Parser parser(file);
   auto program = parser.parse();
   if (!program)
     return "<parse failed>";

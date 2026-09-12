@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,8 @@ using namespace hero;
 namespace {
 
 std::unique_ptr<Program> parseProgram(const std::string &source) {
-  Parser parser(source);
+  SourceFile file("test.hero", source);
+  Parser parser(file);
   return parser.parse();
 }
 
@@ -37,7 +39,8 @@ std::unique_ptr<Program> parseProgram(const std::string &source) {
 // tests don't repeat the boilerplate every time.
 ExprPtr parseExpr(const std::string &text) {
   std::string source = "fn wrapper() -> f32 { " + text + " }";
-  Parser parser(source);
+  SourceFile file("test.hero", source);
+  Parser parser(file);
   auto program = parser.parse();
   if (!program || program->functions.size() != 1)
     return nullptr;
@@ -174,17 +177,19 @@ TEST(Parser, NestedCalls) {
 }
 
 TEST(Parser, MissingSemicolonIsAnError) {
-  Parser parser("fn f() -> f32 { let a = 1.0 a }");
+  SourceFile file("test.hero", "fn f() -> f32 { let a = 1.0 a }");
+  Parser parser(file);
   auto program = parser.parse();
   EXPECT_EQ(program, nullptr);
-  EXPECT_FALSE(parser.errors().empty());
+  EXPECT_TRUE(parser.diags().hasErrors());
 }
 
 TEST(Parser, BodyWithNoResultExpressionIsAnError) {
-  Parser parser("fn f() -> f32 { let a = 1.0; }");
+  SourceFile file("test.hero", "fn f() -> f32 { let a = 1.0; }");
+  Parser parser(file);
   auto program = parser.parse();
   EXPECT_EQ(program, nullptr);
-  EXPECT_FALSE(parser.errors().empty());
+  EXPECT_TRUE(parser.diags().hasErrors());
 }
 
 TEST(Parser, ParsesTheMlpExample) {
@@ -208,4 +213,20 @@ TEST(Parser, ParsesTheMlpExample) {
   ASSERT_NE(fn.body.result, nullptr);
   EXPECT_EQ(fn.body.result->kind, ExprKind::Binary);
   EXPECT_EQ(fn.body.result->op, '+');
+}
+
+// End to end check that the parser's error comes out looking like a real
+// compiler error and not just a line number.
+TEST(Parser, ErrorPointsAtTheOffendingToken) {
+  SourceFile file("bad.hero", "fn f() -> f32 { let a = 1.0 a }");
+  Parser parser(file);
+  parser.parse();
+
+  std::ostringstream out;
+  parser.diags().print(out);
+
+  EXPECT_EQ(out.str(),
+            "bad.hero:1:29: error: expected ; but found identifier\n"
+            "fn f() -> f32 { let a = 1.0 a }\n"
+            "                            ^\n");
 }

@@ -25,8 +25,8 @@ ExprPtr makeExpr(ExprKind kind, SourceLoc loc) {
 
 }  // namespace
 
-Parser::Parser(std::string_view source) {
-  tokens_ = Lexer(source).tokenize();
+Parser::Parser(const SourceFile &file) : diags_(file) {
+  tokens_ = Lexer(file.text()).tokenize();
 }
 
 const Token &Parser::peek(size_t ahead) const {
@@ -80,7 +80,7 @@ std::unique_ptr<Program> Parser::parse() {
     program->functions.push_back(std::move(fn));
   }
 
-  if (!errors_.empty())
+  if (diags_.hasErrors())
     return nullptr;
   return program;
 }
