@@ -2,7 +2,9 @@
 #define HERO_PARSER_H
 
 #include "hero/AST.h"
+#include "hero/Diagnostics.h"
 #include "hero/Lexer.h"
+#include "hero/SourceFile.h"
 
 #include <cstddef>
 #include <memory>
@@ -14,12 +16,13 @@ namespace hero {
 
 class Parser {
 public:
-  explicit Parser(std::string_view source);
+  // The file has to outlive the parser, diagnostics keeps pointing at it.
+  explicit Parser(const SourceFile &file);
 
-  // Null if it didn't parse. errors() says why.
+  // Null if it didn't parse. diags() says why.
   std::unique_ptr<Program> parse();
 
-  const std::vector<std::string> &errors() const { return errors_; }
+  const Diagnostics &diags() const { return diags_; }
 
 private:
   // Token helpers.
@@ -45,7 +48,7 @@ private:
   // Lexing the whole file up front instead of pulling one token at a time.
   std::vector<Token> tokens_;
   size_t index_ = 0;
-  std::vector<std::string> errors_;
+  Diagnostics diags_;
 };
 
 }  // namespace hero

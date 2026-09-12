@@ -3,6 +3,7 @@
 
 #include "hero/ASTPrinter.h"
 #include "hero/Parser.h"
+#include "hero/SourceFile.h"
 
 #include <fstream>
 #include <iostream>
@@ -48,23 +49,22 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  std::ifstream file(path);
-  if (!file) {
+  std::ifstream in(path);
+  if (!in) {
     std::cerr << "heroc: could not open " << path << "\n";
     return 1;
   }
 
   std::stringstream buffer;
-  buffer << file.rdbuf();
+  buffer << in.rdbuf();
   std::string source = buffer.str();
 
-  hero::Parser parser(source);
+  hero::SourceFile file(path, source);
+  hero::Parser parser(file);
+
   auto program = parser.parse();
   if (!program) {
-    // Parser errors already start with line:col so this comes out looking
-    // like the usual file:line:col: message.
-    for (const std::string &message : parser.errors())
-      std::cerr << path << ":" << message << "\n";
+    parser.diags().print(std::cerr);
     return 1;
   }
 

@@ -1,6 +1,7 @@
 #ifndef HERO_LEXER_H
 #define HERO_LEXER_H
 
+#include "hero/SourceFile.h"
 #include <string>
 #include <string_view>
 #include <vector>
@@ -57,18 +58,6 @@ enum class TokenKind {
   // instead of stopping means one bad character doesn't kill the rest of
   // the file. Helps for error handling.
   Unknown,
-};
-
-// The spec also reserves return, schedule, kernel, if, else, while and for.
-// Not sure whether the lexer should give those their own kind so the parser
-// can say "that word is reserved", or whether that's the parser's job.
-// Treating them as plain identifiers for now.
-
-// Where a token came from. Both start at 1 because that's what editors
-// show, and error messages have to match what the user is looking at.
-struct SourceLoc {
-  int line = 1;
-  int column = 1;
 };
 
 struct Token {
