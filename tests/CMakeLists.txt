@@ -16,6 +16,7 @@ add_executable(hero_tests
   ASTPrinterTest.cpp
   SourceFileTest.cpp
   DiagnosticsTest.cpp
+  LexerErrorTest.cpp
 )
 
 target_link_libraries(hero_tests PRIVATE hero_frontend GTest::gtest_main)
