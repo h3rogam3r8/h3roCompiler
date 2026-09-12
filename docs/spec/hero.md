@@ -2,7 +2,10 @@
 
 Inspiration of this spec comes from my other compiler project, Alpha. 
 
-**Status:** Nothing implements this yet.
+**Status:** sections 2 through 5 and 10 are implemented, meaning the lexer and
+parser accept what's described here. Sections 6, 7 and 8 (broadcasting, the
+built-in ops, the error codes) are not checked by anything yet, that's the type
+checker's job and it doesn't exist.
 
 ## 0. What this document is
 

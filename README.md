@@ -6,6 +6,10 @@ Hero is a small tensor language and the compiler that turns it into fast code.
 It's built on MLIR and LLVM, and it targets three things: a CPU, an NVIDIA GPU,
 and a made-up accelerator called Anvil (get it?) that I also have to write a simulator for.
 
+**Where it's at:** the front end works. Hero source gets lexed, parsed, and
+printed as a tree, with error messages that point at the right token. No type
+checking yet, and MLIR hasn't shown up at all. Roadmap below.
+
 ## Why
 
 I want to understand how ML compilers actually work. MLIR dialects, LLVM
@@ -31,8 +35,28 @@ fn mlp(x:  tensor<[B, 768],    f16>,
 ```
 
 Shapes are part of the type, so mismatches are compile errors. `B` is symbolic,
-which means one compiled function handles any batch size. The full spec goes in
-`docs/spec/`.
+which means one compiled function handles any batch size. Full spec is in
+`docs/spec/hero.md`.
+
+## Building
+
+Needs CMake 3.20+, Ninja, and a C++17 compiler. googletest gets downloaded
+during configure, so the first build needs internet.
+
+```
+brew install cmake ninja          # or apt install cmake ninja-build
+
+cmake -S . -B build -G Ninja
+cmake --build build
+./build/tests/hero_tests
+```
+
+Then try it on something:
+
+```
+./build/tools/heroc/heroc examples/mlp.hero --emit=ast
+./build/tools/heroc/heroc examples/mlp.hero --emit=tokens
+```
 
 ## How it fits together
 
@@ -59,26 +83,67 @@ they share every optimization below that point.
 
 ## Roadmap
 
-Rough order. Each phase will end with something I can actually run. It will be verifiable through a modular testing suite.
+Each phase should end with something I can actually run.
 
-1. **Foundations** — language spec, CMake build, test harness, CI.
-2. **Front end** — lexer, parser, error messages that point at the right token.
-3. **Types and shapes** — dtype rules, broadcasting, symbolic shape inference.
-4. **The `hero` dialect** — MLIR ops in TableGen, AST lowered to IR.
-5. **Graph optimization** — fusion, layout assignment, a dataflow framework I
-   write myself instead of importing.
-6. **Down to loops** — linalg, tiling, bufferization, and memory planning by
-   graph coloring. Apparently this ends up being the same problem as register
-   allocation, which I did not expect.
-7. **CPU backend** — vectorize, JIT through LLVM, benchmark against OpenBLAS.
-8. **Autotuning** — search over tile sizes and schedules, cache what wins.
-9. **GPU backend** — PTX, shared memory tiling, tensor cores, benchmark against
-   cuBLAS and Triton.
-10. **Real models** — ONNX and StableHLO importers, a `torch.compile` backend,
-    run GPT-2 small and ResNet-18.
-11. **Anvil** — design the ISA, then write the backend, assembler, and
-    cycle simulator for it.
-12. **Extras** — int8 quantization, fused attention, autodiff.
+- [x] **1. Foundations**
+  - [x] Language spec
+  - [x] CMake, Ninja, googletest
+  - [x] GitHub Actions on linux and macos
+  - [x] Address and undefined behaviour sanitizer job
+- [x] **2. Front end**
+  - [x] Lexer with source locations
+  - [x] Recursive descent parser and AST
+  - [x] AST printer, `heroc --emit=ast`
+  - [x] Diagnostics with the source line and a caret
+  - [x] Negative tests for input that should be rejected
+- [ ] **3. Types and shapes**
+  - [ ] Scopes and name resolution
+  - [ ] dtype rules, no implicit conversion
+  - [ ] Broadcasting
+  - [ ] Symbolic shape inference
+  - [ ] The error codes the spec lists
+- [ ] **4. The `hero` MLIR dialect**
+  - [ ] Ops and types in TableGen
+  - [ ] AST lowered to IR
+  - [ ] `hero-opt` with a pass registry
+- [ ] **5. Graph optimization**
+  - [ ] Canonicalization and constant folding
+  - [ ] A dataflow framework I write myself instead of importing
+  - [ ] Layout assignment
+  - [ ] Operator fusion
+- [ ] **6. Down to loops**
+  - [ ] Lowering to linalg, tiling
+  - [ ] Bufferization
+  - [ ] Memory planning by graph coloring, which apparently is the same
+        problem as register allocation
+- [ ] **7. CPU backend**
+  - [ ] Vectorization
+  - [ ] JIT through LLVM
+  - [ ] Benchmark against OpenBLAS
+- [ ] **8. Autotuning**
+  - [ ] Schedule search space
+  - [ ] Cost model
+  - [ ] Cache what wins
+- [ ] **9. GPU backend**
+  - [ ] PTX generation, checked as text so it doesn't need a GPU
+  - [ ] Shared memory tiling
+  - [ ] Tensor cores
+  - [ ] Benchmark against cuBLAS and Triton
+- [ ] **10. Real models**
+  - [ ] ONNX importer
+  - [ ] StableHLO importer
+  - [ ] `torch.compile` backend
+  - [ ] GPT-2 small and ResNet-18
+- [ ] **11. Anvil**
+  - [ ] Design the ISA
+  - [ ] Instruction selection
+  - [ ] Register allocation
+  - [ ] List scheduling
+  - [ ] Assembler and cycle simulator
+- [ ] **12. Extras**
+  - [ ] int8 quantization
+  - [ ] Fused attention
+  - [ ] Autodiff
 
 ## Not doing
 
@@ -89,10 +154,8 @@ No general-purpose language features. Single device only.
 I develop on an M2 Pro Mac (ARM NEON, no CUDA) and do GPU work on an RTX 2060
 laptop through WSL2. The 2060 is Turing. From what I can tell that means
 `mma.sync` tensor cores work on it but `cp.async` doesn't, since that one
-needs sm_80. The plan is to test GPU code by checking the generated PTX as text, 
-which shouldn't need a GPU at all. The 2060 is Turing, so `mma.sync` tensor cores work but
-`cp.async` doesn't: that one needs sm_80. GPU code is tested by running
-FileCheck over the generated PTX, which doesn't need a GPU at all.
+needs sm_80. I expect to find out the hard way. The plan is to test GPU code
+by checking the generated PTX as text, which shouldn't need a GPU at all.
 
 ## License
 
