@@ -55,8 +55,7 @@ bool Parser::match(TokenKind kind) {
 }
 
 void Parser::error(const Token &tok, const std::string &message) {
-  errors_.push_back(std::to_string(tok.loc.line) + ":" +
-                    std::to_string(tok.loc.column) + ": " + message);
+  diags_.error(tok.loc, message);
 }
 
 bool Parser::expect(TokenKind kind, const char *what) {
